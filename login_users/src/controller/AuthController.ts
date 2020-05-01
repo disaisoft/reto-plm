@@ -1,6 +1,9 @@
 import { getRepository } from "typeorm";
 import { Request, Response } from "express";
 import { User } from "../entity/User";
+import config from "../config/config";
+import * as jwt from "jsonwebtoken";
+
 
 class AuthController {
     static login = async (req: Request, res: Response) => {
@@ -24,7 +27,9 @@ class AuthController {
             return res.status(400).json({message: "Username of password incorrect"})
         }
 
-        res.send(user);
+        const token = jwt.sign({userId: user.id, username: user.username}, config.jwtSecret, {expiresIn: "1h"});
+
+        res.json({ message: "OK", token});
     };
 }
 
